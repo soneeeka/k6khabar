@@ -1,0 +1,38 @@
+{% extends 'userapp/base.html' %}
+
+{%load static %}
+{%block title%}
+
+Register| k6khabar
+{% endblock %}
+
+<form methos="POST" class="form-signin">
+    {%csrf_token%}
+
+
+{% block main_content %}
+<form class="form-signin">
+    <img class="mb-4" src="{% static 'userapp/img/download.png' %}" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please Register to K6khabar</h1>
+    <label for="inputEmail address" class="sr-only">Email address</label>
+    <input type="Email" name="Email address" id="inputEmailaddress" class="form-control" placeholder="Email address" required autofocus>
+    <label for="inputFirstname" class="sr-only">Firstname</label>
+    <input type="text" id="inputFirstname" name="Firstname" class="form-control" placeholder="Firstname" required autofocus>
+    <label for="inputLastname" class="sr-only">Lastname</label>
+    <input type="text" id="inputLastname" name="Lastname" class="form-control" placeholder="Lastname" required autofocus>
+    <label for="inputUsername" class="sr-only">Username</label>
+    <input type="text" id="inputUsername" name="Username" class="form-control" placeholder="Username" required autofocus>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" name="Password" id="inputPassword" class="form-control" placeholder="Password" required>
+    <label for="inputConfirm Password" class="sr-only">Confirm Password</label>
+    <input type="password" name="Confirm Password" id="inputConfirmPassword" class="form-control" placeholder="Confirm Password" required>
+    <label for="inputStatus" class="sr-only">Status</label>
+    <input type="text" name="Status" id="inputUsername" class="form-control" placeholder="Status" required autofocus>
+    <label for="inputProfile Picture" class="sr-only">Profile Picture</label>
+    <input type="file" name="Profile Picture" id="inputPassword" class="form-control" placeholder="Profile Picture" required>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2020</p>
+  </form>
+</form>
+
+{% endblock %}
