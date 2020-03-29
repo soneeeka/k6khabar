@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
+    
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -21,15 +21,34 @@
   <body>
     <h1 style="float:inline-start">
       K6Khabar.com
-      <a href="{%url 'login'%}"" <button type="button" class="btn btn-primary" style="float: right;">
+      {%if request.user.is_authenticated%}
+      <small>Welcome, {{request.user.username}}!</small>
+        <a href="{% url 'logout' %}">
+          <button type="button"
+          class="btn btn-primary"
+          style="float: right; margin:4px"
+        >
+          Logout
+        </button></a
+      >
+      {%else%}
+        <a href="{% url 'login' %}"
+        ><button
+        type="button"
+        class="btn btn-primary"
+        style="float: right; margin:4px"
+        >
         Login
-      </button></a>
-    
-    
-      <a href="{%url 'register'%}"" <button type="button" class="btn btn-primary" style="float: right;">
-        Sign Up
-      </button></a>
-    
+        </button></a>
+
+        <a href="{% url 'register' %}">
+        <button type="button"
+        class="btn btn-primary"
+        style="float: right; margin:4px">
+        Register
+        </button></a>
+      {%endif%}
+
     </h1>
     
 
@@ -49,7 +68,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           {% for category in categories %}
-          <li class="nav-item">
+          <li class="nav-item {% if current_category_id == category.id %} active {% endif %}"">
             <a class="nav-link" href="{% url 'topic' category.id %}">
               {{category.name}}
             </a>
@@ -57,8 +76,9 @@
           {% endfor %}
         </ul>
       </div>
-      <form class="form-inline">
+      <form method='GET' action="{%url 'search' %}" class="form-inline">
         <input
+          name='query'
           class="form-control mr-sm-2"
           type="search"
           placeholder="Search"
@@ -68,9 +88,19 @@
           Search
         </button>
       </form>
+      {%if request.user.is_authenticated%}
+
+      <a href="{%url 'add_postview' %}"><button style="margin: 4px;" class="btn btn-outline-success my-2 my-sm-0">
+        Add Post 
+      </button></a>
+      {%endif%}
+    
     </nav>
+    <div class="ml-4">
 
     {% block main_content %} {% endblock %}
+    </div>
+     
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

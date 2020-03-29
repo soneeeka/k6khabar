@@ -17,7 +17,7 @@
             </div>
         </div>
     {% endif %}
-
+    {% if posts %}
     {% for post in posts %}
         <div class="card" style="width: 24rem; float:left; margin:2rem; min-height:20rem;">
             <img src="{{post.header_image.url}}" class="card-img-top" alt="...">
@@ -30,5 +30,11 @@
             </div>
         </div>
     {% endfor %}
+    {%else%}
+    <h3> No News available!!!</h3>
+    {%endif%}
+
+    
+    
 
 {% endblock %}
