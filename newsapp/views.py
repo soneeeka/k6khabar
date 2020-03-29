@@ -6,15 +6,23 @@ from .models import PostModel, CategoryModel
 from userapp.models import UserModel
 from django.contrib.auth.models import User
 import random
+
+def get_featured(posts):
+    if len(posts)==0:
+        None
+    else:
+        num_of_post = len(posts)
+        featured_post_index=random.randint(0,num_of_post-1)
+        return posts[featured_post_index]
+
 def index(request):
-    posts = PostModel.objects.all().order_by()
+    posts = PostModel.objects.all().order_by('posted_on','title','posted_by')[:10]
     categories = CategoryModel.objects.all()[:5]
-    num_of_post = len(posts)
-    featured_post_index=random.randint(0,num_of_post-1)
+    
     context = {
         'posts' : posts,
         'categories': categories,
-        'featured_post': posts[featured_post_index] if len(posts) > 0 else None
+        'featured_post': get_featured(posts)
 
     }
     return render(request, 'newsapp/index.html', context)
@@ -33,12 +41,11 @@ def categorynews(request, id):
     if category:
         posts = PostModel.objects.filter(category=category)
         categories = CategoryModel.objects.all()[:5]
-        num_of_post = len(posts)
-        featured_post_index=random.randint(0,num_of_post-1)
+        
         context = {
             'posts': posts,
             'categories': categories,
-            'featured_post' : posts[featured_post_index] if len(posts) > 0 else None,
+            'featured_post' : get_featured(posts),
             'current_category_id' :id
         }
         return render(request, 'newsapp/index.html', context)
