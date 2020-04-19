@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib.auth.decorators import login_required
-from .forms import AddPostForm
-from .models import PostModel, CategoryModel
+from .forms import AddPostForm,CommentForm
+from .models import PostModel, CategoryModel,CommentModel
 from userapp.models import UserModel
 from django.contrib.auth.models import User
 import random
@@ -30,9 +30,11 @@ def index(request):
 def detail(request, id):
     post = PostModel.objects.filter(id=id).first()
     categories = CategoryModel.objects.all()[:5]
+    
     context = {
         'post': post,
-        'categories': categories
+        'categories': categories,
+       
     }
     return render(request, 'newsapp/detail.html', context)
 
@@ -120,6 +122,96 @@ def editpost(request,id):
             return render(request,'newsapp/edit_post.html',{'form':form})
         else:
             return render(request, 'newsapp/error404.html')
+@login_required
+def deletepost(request,id):
+    post=PostModel.objects.filter(id=id).first()
+    if post:
+        logged_in_user_id= request.user.id
+        post_user_id=post.posted_by.auth.id
+        if logged_in_user_id==post_user_id:
+            post.delete()
+            return redirect ('index')
+        else:
+            return render(request,'newsapp/error40.html') 
+
+    
+    else:
+        #there is no page with that id
+        return render(request, 'newsapp/error404.html')
+
+@login_required
+def comment_view(request,id):
+    if request.method=='POST':
+        form=CommentForm(request.POST, request.FILES)
+        comment= CommentModel.objects.filter(id=id).first()
+        if form.is_valid():
+            #now add logic to add form
+            post= form.save(commit=False)
+            django_user=User.objects.filter(id=request.user.id).first()
+            current_user=UserModel.objects.filter(auth=django_user).first()
+            comment.commented_by=current_user
+            comment.save()
+            return redirect('index')
+        else:
+            return render(request,'newsapp/comment.html',{'form':form})
+
+    else:
+        form=CommentForm()
+
+        
+        context={
+            'post': post,
+            'form':form
+        }
+        return render(request,'newsapp/comment.html',context)
+@login_required
+def deletecomment(request,id):
+    post=PostModel.objects.filter(id=id).first()
+    if post:
+        logged_in_user_id= request.user.id
+        post_user_id=post.posted_by.auth.id
+        if logged_in_user_id==post_user_id:
+            post.delete()
+            return redirect ('detail',post.id)
+        else:
+            return render(request,'newsapp/error40.html') 
+
+    
+    else:
+        #there is no page with that id
+        return render(request, 'newsapp/error404.html')
+
+@login_required
+def editcomment(request,id):
+    if request.method=='POST':
+        
+        form=CommentForm(request.POST, request.FILES)
+        post=PostModel.objects.filter(id=id).first()
+        if post:
+            current_user_id=request.user.id
+            post_user_id= post.posted_by.auth.id
+            if current_user_id==post_user_id:
+                form=CommentForm(request.POST, files=request.FILES, instance=post)
+                if form.is_valid():
+                    form.save()
+                    return redirect('detail', post.id)
+                else:
+                    return render(request, 'newsapp/editcomment.html', {'form':form})
+
+            
+            else:
+                return render(request,'newsapp/error404.html')
+    else:
+        post=PostModel.objects.filter(id=id).first()
+        if post:
+            form=AddPostForm(instance=post)
+            return render(request,'newsapp/edit_post.html',{'form':form})
+        else:
+            return render(request, 'newsapp/error404.html')
+
+
+
+
 
 def search(request):
     categories=CategoryModel.objects.all()[:5]
